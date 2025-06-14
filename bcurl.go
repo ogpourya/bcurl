@@ -28,10 +28,8 @@ func main() {
 	userArgs := os.Args[1:]
 	cleanArgs := []string{"--compressed", "-sS"}
 
-	// Collect user headers keys to know which Firefox headers to skip
 	userHeaderKeys := map[string]bool{}
 
-	// First, append user args, and track user headers keys
 	for i := 0; i < len(userArgs); i++ {
 		if userArgs[i] == "-H" && i+1 < len(userArgs) {
 			name := headerName(userArgs[i+1])
@@ -43,10 +41,9 @@ func main() {
 		cleanArgs = append(cleanArgs, userArgs[i])
 	}
 
-	// Add Firefox headers, but skip those overridden by user
 	for k, v := range firefoxHeaders {
 		if _, exists := userHeaderKeys[strings.ToLower(k)]; exists {
-			continue // user overrides this header, skip adding Firefox one
+			continue
 		}
 		cleanArgs = append(cleanArgs, "-H", fmt.Sprintf("%s: %s", k, v))
 	}
@@ -60,6 +57,11 @@ func main() {
 	cmd.Stdin = os.Stdin
 
 	err := cmd.Run()
+
+	// Print both outputs BEFORE exiting
+	fmt.Print(stdout.String())
+	fmt.Fprint(os.Stderr, stderr.String())
+
 	if err != nil {
 		if exitErr, ok := err.(*exec.ExitError); ok {
 			os.Exit(exitErr.ExitCode())
@@ -67,7 +69,4 @@ func main() {
 			os.Exit(1)
 		}
 	}
-
-	fmt.Print(stdout.String())
-	fmt.Fprint(os.Stderr, stderr.String())
 }
