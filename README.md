@@ -11,7 +11,7 @@
 ## Installation
 
 ```bash
-go install github.com/pzaeemfar/bcurl@latest
+GOPROXY=direct go install github.com/pzaeemfar/bcurl@latest
 ```
 
 ## Usage
